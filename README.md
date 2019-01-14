@@ -1,34 +1,53 @@
 # lazyload-vue
 
-## Project setup
-```
-yarn install
+Vue Plugin for [vanilla-lazyload](https://github.com/verlok/lazyload)
+
+## Install
+
+    yarn add lazyload-vue
+
+## Usage
+
+```js
+import LazyloadVue from 'lazyload-vue'
+
+Vue.use(LazyloadVue)
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
+**Directive lazy-src example**
+
+```html
+<template>
+  <img lazy-src="http://lorempixel.com/300/300">
+</template>
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
-```
 
-### Run your tests
-```
-yarn run test
-```
 
-### Lints and fixes files
-```
-yarn run lint
-```
 
-### Run your unit tests
-```
-yarn run test:unit
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Development Setup
+
+    # Project setup
+    
+    yarn install
+
+    # Compiles and hot-reloads for development
+    
+    yarn starty
+
+    # Compiles and minifies for production
+    
+    yarn build
+
+    # Run your tests
+    
+    yarn test
+
+    # Lints and fixes files
+    
+    yarn lint
+
+    # Run your unit tests
+    
+    yarn test:unit
