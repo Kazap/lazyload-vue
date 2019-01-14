@@ -1,6 +1,6 @@
 {
-  "name": "@kazap.co/lazyload-vue",
-  "version": "0.1.0",
+  "name": "lazyload-vue",
+  "version": "0.1.2",
   "license": "MIT",
   "main": "dist/lazyload-vue.umd.js",
   "scripts": {
@@ -76,5 +76,23 @@
       "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
     ],
     "testURL": "http://localhost/"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kazap/lazyload-vue.git"
+  },
+  "keywords": [
+    "lazyload",
+    "vanilla-lazyload",
+    "lazyload-vue",
+    "vue",
+    "vue-plugin",
+    "directives",
+    "image",
+    "performance"
+  ],
+  "bugs": {
+    "url": "https://github.com/Kazap/lazyload-vue/issues"
+  },
+  "homepage": "https://github.com/Kazap/lazyload-vue#readme"
 }
