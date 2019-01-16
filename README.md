@@ -18,7 +18,7 @@ Vue.use(LazyloadVue)
 
 ```html
 <template>
-  <img lazy-src="http://lorempixel.com/300/300">
+  <img v-lazy-src="http://lorempixel.com/300/300">
 </template>
 ```
 
@@ -34,7 +34,7 @@ Vue.use(LazyloadVue)
 
     # Compiles and hot-reloads for development
     
-    yarn starty
+    yarn start
 
     # Compiles and minifies for production
     
