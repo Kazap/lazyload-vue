@@ -1,6 +1,12 @@
 <template>
   <div class="wrapper">
     <div class="container">
+      <img
+        v-lazy-src="srcDin"
+        alt="My Image Example"
+      />
+      {{srcDin}}
+      <input type="text" v-model="srcDin" />
       <div class="card" v-for="image in images" :key="image">
         <h3>Lorem ipsum dolor sit amet</h3>
         <img
@@ -20,6 +26,7 @@ export default {
   },
   data() {
     return {
+      srcDin: 'http://lorempixel.com/500/500/fashion/1/',
       images: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     };
   }

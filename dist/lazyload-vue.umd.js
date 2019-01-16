@@ -640,46 +640,50 @@ if (runningOnBrowser) {
 // CONCATENATED MODULE: ./src/directives/lazySrc.js
 
 
-const lazySrc = () => {
-  const lazyLoadInstance = new lazyload_es2015({
+var lazySrc_lazySrc = function lazySrc() {
+  var lazyLoadInstance = new lazyload_es2015({
     elements_selector: ".lazy-image"
   });
 
-  function bind(el, binding, vnode) {
-    if (vnode.tag === "img") {
-      el.dataset.src = binding.value;
-      el.classList.add("lazy-image");
-    }
+  function bind(el, binding) {
+    el.dataset.src = binding.value;
+    el.classList.add("lazy-image");
   }
 
   function inserted() {
     lazyLoadInstance.update();
   }
 
+  function update(el, binding) {
+    if (binding.oldValue !== binding.value) {
+      el.src = "";
+      el.classList.remove("loaded");
+      el.dataset.src = binding.value;
+      el.setAttribute("data-was-processed", false);
+      lazyLoadInstance.update();
+    }
+  }
+
   return {
-    bind,
-    inserted
+    bind: bind,
+    inserted: inserted,
+    update: update
   };
 };
 
-/* harmony default export */ var directives_lazySrc = (lazySrc());
-
+/* harmony default export */ var directives_lazySrc = (lazySrc_lazySrc());
 // CONCATENATED MODULE: ./src/plugins/LazyLoadVue/index.js
 
+var lazyLoadPlugin = {};
 
-const lazyLoadPlugin = {};
-
-lazyLoadPlugin.install = function(Vue) {
+lazyLoadPlugin.install = function (Vue) {
   Vue.directive("lazy-src", directives_lazySrc);
 };
 
 /* harmony default export */ var LazyLoadVue = (lazyLoadPlugin);
-
 // CONCATENATED MODULE: ./src/lazyload-vue.js
 
-
 /* harmony default export */ var lazyload_vue = (LazyLoadVue);
-
 // CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/entry-lib.js
 
 
