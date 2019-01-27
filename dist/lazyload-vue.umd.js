@@ -2694,29 +2694,45 @@ var es6_regexp_replace = __webpack_require__("a481");
 
 
 var lazySrc = function lazySrc(instances) {
+  var getClassSelector = function getClassSelector(binding) {
+    var instance = getCurrentInstance(binding);
+    return instance._settings.elements_selector.replace(".", "");
+  };
+
+  var getCurrentInstance = function getCurrentInstance(binding) {
+    return instances[binding.arg] || instances["root"];
+  };
+
   function bind(el, binding) {
-    var instance = instances[binding.arg] || instances["root"];
-
-    var classSelector = instance._settings.elements_selector.replace(".", "");
-
     el.dataset.src = binding.value;
+    var classSelector = getClassSelector(binding);
     el.classList.add(classSelector);
   }
 
   function inserted(el, binding) {
-    var instance = instances[binding.arg] || instances["root"];
+    var instance = getCurrentInstance(binding);
     instance.update();
   }
 
   function update(el, binding) {
+    var instance = getCurrentInstance(binding);
+    var classSelector = getClassSelector(binding);
+    var hasUpdate;
+
+    if (!el.classList.contains(classSelector)) {
+      el.classList.add(classSelector);
+      hasUpdate = true;
+    }
+
     if (binding.oldValue !== binding.value) {
-      var instance = instances[binding.arg] || instances["root"];
       el.src = "";
       el.classList.remove("loaded");
       el.dataset.src = binding.value;
       el.setAttribute("data-was-processed", false);
-      instance.update();
+      hasUpdate = true;
     }
+
+    hasUpdate && instance.update();
   }
 
   return {
