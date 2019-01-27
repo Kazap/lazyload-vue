@@ -1,12 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="container">
-      <img v-lazy-src:webp="srcDin" alt="My Image Example" /> {{ srcDin }}
-      <input type="text" v-model="srcDin" />
+      <center>
+        <img
+          v-lazy-src:webp="srcDin"
+          alt="My Image Example"
+          v-on:click="isActive = !isActive"
+          v-bind:class="{ active: isActive }"/>
+      </center>
+       <center>{{ srcDin }}</center>
+      <center><input type="text" v-model="srcDin" /></center>
       <div class="card" v-for="image in images" :key="image">
         <h3>Lorem ipsum dolor sit amet</h3>
         <img
-          v-lazy-src="`http://lorempixel.com/200/200/fashion/${image}`"
+          v-lazy-src="`https://via.placeholder.com/200/000000/ffffff?text=${image}`"
           alt="My Image Example"
         />
       </div>
@@ -22,8 +29,9 @@ export default {
   },
   data() {
     return {
-      srcDin: "http://lorempixel.com/500/500/fashion/1/",
-      images: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      isActive: true,
+      srcDin: "https://via.placeholder.com/400/000000/ffffff?text=Lazyload test 1",
+      images: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     };
   }
 };
@@ -39,4 +47,6 @@ export default {
   max-width 900px
   overflow hidden
   background #fff
+.active
+  border 4px solid lime
 </style>
