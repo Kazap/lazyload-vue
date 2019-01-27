@@ -17,6 +17,19 @@
           alt="My Image Example"
         />
       </div>
+
+      <h3>Scrolling Panel with container</h3>
+
+      <div v-lazy-container class="scrollingPanel">
+        <div class="card" v-for="image in images" :key="image">
+          <h3>Lorem ipsum dolor sit amet</h3>
+          <img
+            v-lazy-src="`https://via.placeholder.com/150/000000/ffffff?text=${image}`"
+            alt="My Image Example"
+          />
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -49,4 +62,10 @@ export default {
   background #fff
 .active
   border 4px solid lime
+.scrollingPanel
+  max-height 300px
+  overflow-y scroll
+  -webkit-overflow-scrolling touch
+  margin 1em
+  border 2px solid #333
 </style>

@@ -5,7 +5,22 @@ const lazySrc = instances => {
   };
 
   const getCurrentInstance = binding => {
-    return instances[binding.arg] || instances["root"];
+    if (!binding.arg) return instances["root"];
+
+    if (instances[binding.arg]) {
+      return instances[binding.arg];
+    } else {
+      throw new Error(`lazyload-vue: instance called "${binding.arg}" not found. Please set this instance on plugin options. Try:
+      Vue.use(LazyloadVue, {
+        instances: {
+          ...otherInstances,
+          ${binding.arg}: {
+            ...yourOptions
+          }
+        }
+      })
+      `);
+    }
   };
 
   function bind(el, binding) {
