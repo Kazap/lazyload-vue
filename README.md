@@ -18,8 +18,25 @@ Vue.use(LazyloadVue)
 
 ```html
 <template>
-  <img v-lazy-src="http://lorempixel.com/300/300">
+  <img v-lazy-src="http://lorempixel.com/300/300" />
 </template>
+```
+
+**Directive lazy-container example**
+
+```html
+<template>
+  <div v-lazy-container class="scrollingPanel">
+    <img v-lazy-src="http://lorempixel.com/300/300" />
+    ... other images
+  </div>
+</template>
+<style>
+  .scrollingPanel {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+</style>
 ```
 
 **Example with options**
