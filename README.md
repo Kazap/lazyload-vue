@@ -2,6 +2,19 @@
 
 Vue Plugin for [vanilla-lazyload](https://github.com/verlok/lazyload)
 
+## features
+- [x] Simple usage with ```v-lazy-src```
+- [x] Accepts options ```Vue.use(LazyloadVue, options)```
+- [x] Multiple instances
+- [x] Scrolling Panel
+- [x] Multiple scrolling panels
+- [ ] Responsive images - img tag with srcset / sizes
+- [ ] Responsive images - picture tag
+- [ ] Delay load
+- [ ] Videos - Tag video
+- [ ] Lazy Iframes
+- [ ] Lazy Background images with ```v-lazy-bg```
+
 ## Install
 
     yarn add lazyload-vue
