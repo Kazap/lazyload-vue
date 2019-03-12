@@ -2,6 +2,10 @@
 
 Vue Plugin for [vanilla-lazyload](https://github.com/verlok/lazyload)
 
+Build status:
+
+[![CircleCI](https://circleci.com/gh/Kazap/lazyload-vue/tree/master.svg?style=svg)](https://circleci.com/gh/Kazap/lazyload-vue/tree/master)
+
 ## features
 - [x] Simple usage with ```v-lazy-src```
 - [x] Accepts options ```Vue.use(LazyloadVue, options)```
