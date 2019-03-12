@@ -1,0 +1,11 @@
+{
+  "docs": {
+    "What is LazyloadVue?": ["what-is"],
+    "Getting Started": ["installation"],
+    "Directives": ["lazy-src", "lazy-container"],
+    "Options": ["instances"]
+  },
+  "docs-other": {
+    "First Category": ["doc4", "doc5"]
+  }
+}
