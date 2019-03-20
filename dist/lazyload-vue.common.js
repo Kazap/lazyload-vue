@@ -2691,7 +2691,13 @@ var lazySrc = function lazySrc(instances) {
   };
 
   var getCurrentInstance = function getCurrentInstance(binding) {
-    return instances[binding.arg] || instances["root"];
+    if (!binding.arg) return instances["root"];
+
+    if (instances[binding.arg]) {
+      return instances[binding.arg];
+    } else {
+      throw new Error("lazyload-vue: instance called \"".concat(binding.arg, "\" not found. Please set this instance on plugin options. Try:\n      Vue.use(LazyloadVue, {\n        instances: {\n          ...otherInstances,\n          ").concat(binding.arg, ": {\n            ...yourOptions\n          }\n        }\n      })\n      "));
+    }
   };
 
   function bind(el, binding) {
@@ -3256,7 +3262,24 @@ if (runningOnBrowser) {
 
 /* harmony default export */ var lazyload_es2015 = (LazyLoad);
 
+// CONCATENATED MODULE: ./src/directives/lazyContainer.js
+
+
+var lazyContainer_lazyContainer = function lazyContainer() {
+  function bind(el) {
+    new lazyload_es2015({
+      container: el
+    });
+  }
+
+  return {
+    bind: bind
+  };
+};
+
+/* harmony default export */ var directives_lazyContainer = (lazyContainer_lazyContainer());
 // CONCATENATED MODULE: ./src/plugins/LazyLoadVue/index.js
+
 
 
 
@@ -3299,6 +3322,7 @@ lazyLoadPlugin.install = function (Vue, options) {
   }, {});
 
   Vue.directive("lazy-src", directives_lazySrc(instances));
+  Vue.directive("lazy-container", directives_lazyContainer);
 };
 
 /* harmony default export */ var LazyLoadVue = (lazyLoadPlugin);

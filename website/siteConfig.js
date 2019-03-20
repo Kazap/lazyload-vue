@@ -24,7 +24,7 @@ const siteConfig = {
   title: 'Lazyload Vue', // Title for your website.
   tagline: '',
   url: 'https://kazap.github.io/lazyload-vue/', // Your website URL
-  baseUrl: '/', // Base URL for your project */
+  baseUrl: '/lazyload-vue/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
@@ -98,7 +98,7 @@ const siteConfig = {
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  repoUrl: 'https://github.com/Kazap/lazyload-vue',
+  repoUrl: 'https://kazap.github.io/lazyload-vue/',
 };
 
 module.exports = siteConfig;
