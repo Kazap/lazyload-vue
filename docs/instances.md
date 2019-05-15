@@ -34,8 +34,8 @@ Vue.use(LazyloadVue, {
 ```html
 <template>
   <div>
-    <img v-lazy-src="http://lorempixel.com/300/300">
-    <img v-lazy-src:foobar="http://lorempixel.com/300/300">
+    <img v-lazy-src="'http://lorempixel.com/300/300'">
+    <img v-lazy-src:foobar="'http://lorempixel.com/300/300'">
   </div>
 </template>
 ```

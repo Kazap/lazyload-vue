@@ -8,7 +8,7 @@ title: lazy-container
 ```html
 <template>
   <div v-lazy-container class="scrollingPanel">
-    <img v-lazy-src="http://lorempixel.com/300/300" />
+    <img v-lazy-src="'http://lorempixel.com/300/300'" />
     ... other images
   </div>
 </template>

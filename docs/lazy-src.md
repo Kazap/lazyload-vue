@@ -7,6 +7,6 @@ title: lazy-src
 
 ```html
 <template>
-  <img v-lazy-src="http://lorempixel.com/300/300" />
+  <img v-lazy-src="'http://lorempixel.com/300/300'" />
 </template>
 ```
