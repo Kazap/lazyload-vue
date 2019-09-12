@@ -35,7 +35,7 @@ Vue.use(LazyloadVue)
 
 ```html
 <template>
-  <img v-lazy-src="http://lorempixel.com/300/300" />
+  <img v-lazy-src="'http://lorempixel.com/300/300'" />
 </template>
 ```
 
@@ -44,7 +44,7 @@ Vue.use(LazyloadVue)
 ```html
 <template>
   <div v-lazy-container class="scrollingPanel">
-    <img v-lazy-src="http://lorempixel.com/300/300" />
+    <img v-lazy-src="'http://lorempixel.com/300/300'" />
     ... other images
   </div>
 </template>
@@ -77,8 +77,8 @@ Vue.use(LazyloadVue, {
 ```html
 <template>
   <div>
-    <img v-lazy-src="http://lorempixel.com/300/300">
-    <img v-lazy-src:webp="http://lorempixel.com/300/300">
+    <img v-lazy-src="'http://lorempixel.com/300/300'">
+    <img v-lazy-src:webp="'http://lorempixel.com/300/300'">
   </div>
 </template>
 ```
