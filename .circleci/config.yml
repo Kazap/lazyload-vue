@@ -4,7 +4,18 @@
 #
 version: 2
 jobs:
+  - test:
+    filters:
+      tags:
+        only: /^v.*/
   deploy:
+    requires:
+      - test
+    filters:
+      tags:
+        only: /^v.*/
+      branches:
+        ignore: /.*/
     docker:
       # specify the version you desire here
       - image:  circleci/node:8.11.2
