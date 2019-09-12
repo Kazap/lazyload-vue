@@ -1,6 +1,6 @@
 {
   "name": "lazyload-vue",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "license": "MIT",
   "main": "dist/lazyload-vue.umd.js",
   "scripts": {
