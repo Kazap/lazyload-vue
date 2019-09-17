@@ -41,12 +41,11 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/lazyload-vue
-      - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/lazyload-vue/.npmrc
-      - run:
-          name: Publish package
-          command: npm publish
+      - deploy:
+          name: Publish to npmjs.org
+          command: |
+            echo "//registry.npmjs.org/:_authToken=${npm_TOKEN}" >> ~/.npmrc
+            npm publish
 
 workflows:
   version: 2
