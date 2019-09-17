@@ -11,7 +11,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "vanilla-lazyload": "^8.17.0"
+    "vanilla-lazyload": "^12.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.3.0",
