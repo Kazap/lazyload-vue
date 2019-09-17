@@ -87,248 +87,6 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
-/***/ "014b":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-// ECMAScript 6 symbols shim
-var global = __webpack_require__("e53d");
-var has = __webpack_require__("07e3");
-var DESCRIPTORS = __webpack_require__("8e60");
-var $export = __webpack_require__("63b6");
-var redefine = __webpack_require__("9138");
-var META = __webpack_require__("ebfd").KEY;
-var $fails = __webpack_require__("294c");
-var shared = __webpack_require__("dbdb");
-var setToStringTag = __webpack_require__("45f2");
-var uid = __webpack_require__("62a0");
-var wks = __webpack_require__("5168");
-var wksExt = __webpack_require__("ccb9");
-var wksDefine = __webpack_require__("6718");
-var enumKeys = __webpack_require__("47ee");
-var isArray = __webpack_require__("9003");
-var anObject = __webpack_require__("e4ae");
-var isObject = __webpack_require__("f772");
-var toIObject = __webpack_require__("36c3");
-var toPrimitive = __webpack_require__("1bc3");
-var createDesc = __webpack_require__("aebd");
-var _create = __webpack_require__("a159");
-var gOPNExt = __webpack_require__("0395");
-var $GOPD = __webpack_require__("bf0b");
-var $DP = __webpack_require__("d9f6");
-var $keys = __webpack_require__("c3a1");
-var gOPD = $GOPD.f;
-var dP = $DP.f;
-var gOPN = gOPNExt.f;
-var $Symbol = global.Symbol;
-var $JSON = global.JSON;
-var _stringify = $JSON && $JSON.stringify;
-var PROTOTYPE = 'prototype';
-var HIDDEN = wks('_hidden');
-var TO_PRIMITIVE = wks('toPrimitive');
-var isEnum = {}.propertyIsEnumerable;
-var SymbolRegistry = shared('symbol-registry');
-var AllSymbols = shared('symbols');
-var OPSymbols = shared('op-symbols');
-var ObjectProto = Object[PROTOTYPE];
-var USE_NATIVE = typeof $Symbol == 'function';
-var QObject = global.QObject;
-// Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
-var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
-
-// fallback for old Android, https://code.google.com/p/v8/issues/detail?id=687
-var setSymbolDesc = DESCRIPTORS && $fails(function () {
-  return _create(dP({}, 'a', {
-    get: function () { return dP(this, 'a', { value: 7 }).a; }
-  })).a != 7;
-}) ? function (it, key, D) {
-  var protoDesc = gOPD(ObjectProto, key);
-  if (protoDesc) delete ObjectProto[key];
-  dP(it, key, D);
-  if (protoDesc && it !== ObjectProto) dP(ObjectProto, key, protoDesc);
-} : dP;
-
-var wrap = function (tag) {
-  var sym = AllSymbols[tag] = _create($Symbol[PROTOTYPE]);
-  sym._k = tag;
-  return sym;
-};
-
-var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function (it) {
-  return typeof it == 'symbol';
-} : function (it) {
-  return it instanceof $Symbol;
-};
-
-var $defineProperty = function defineProperty(it, key, D) {
-  if (it === ObjectProto) $defineProperty(OPSymbols, key, D);
-  anObject(it);
-  key = toPrimitive(key, true);
-  anObject(D);
-  if (has(AllSymbols, key)) {
-    if (!D.enumerable) {
-      if (!has(it, HIDDEN)) dP(it, HIDDEN, createDesc(1, {}));
-      it[HIDDEN][key] = true;
-    } else {
-      if (has(it, HIDDEN) && it[HIDDEN][key]) it[HIDDEN][key] = false;
-      D = _create(D, { enumerable: createDesc(0, false) });
-    } return setSymbolDesc(it, key, D);
-  } return dP(it, key, D);
-};
-var $defineProperties = function defineProperties(it, P) {
-  anObject(it);
-  var keys = enumKeys(P = toIObject(P));
-  var i = 0;
-  var l = keys.length;
-  var key;
-  while (l > i) $defineProperty(it, key = keys[i++], P[key]);
-  return it;
-};
-var $create = function create(it, P) {
-  return P === undefined ? _create(it) : $defineProperties(_create(it), P);
-};
-var $propertyIsEnumerable = function propertyIsEnumerable(key) {
-  var E = isEnum.call(this, key = toPrimitive(key, true));
-  if (this === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return false;
-  return E || !has(this, key) || !has(AllSymbols, key) || has(this, HIDDEN) && this[HIDDEN][key] ? E : true;
-};
-var $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(it, key) {
-  it = toIObject(it);
-  key = toPrimitive(key, true);
-  if (it === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return;
-  var D = gOPD(it, key);
-  if (D && has(AllSymbols, key) && !(has(it, HIDDEN) && it[HIDDEN][key])) D.enumerable = true;
-  return D;
-};
-var $getOwnPropertyNames = function getOwnPropertyNames(it) {
-  var names = gOPN(toIObject(it));
-  var result = [];
-  var i = 0;
-  var key;
-  while (names.length > i) {
-    if (!has(AllSymbols, key = names[i++]) && key != HIDDEN && key != META) result.push(key);
-  } return result;
-};
-var $getOwnPropertySymbols = function getOwnPropertySymbols(it) {
-  var IS_OP = it === ObjectProto;
-  var names = gOPN(IS_OP ? OPSymbols : toIObject(it));
-  var result = [];
-  var i = 0;
-  var key;
-  while (names.length > i) {
-    if (has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true)) result.push(AllSymbols[key]);
-  } return result;
-};
-
-// 19.4.1.1 Symbol([description])
-if (!USE_NATIVE) {
-  $Symbol = function Symbol() {
-    if (this instanceof $Symbol) throw TypeError('Symbol is not a constructor!');
-    var tag = uid(arguments.length > 0 ? arguments[0] : undefined);
-    var $set = function (value) {
-      if (this === ObjectProto) $set.call(OPSymbols, value);
-      if (has(this, HIDDEN) && has(this[HIDDEN], tag)) this[HIDDEN][tag] = false;
-      setSymbolDesc(this, tag, createDesc(1, value));
-    };
-    if (DESCRIPTORS && setter) setSymbolDesc(ObjectProto, tag, { configurable: true, set: $set });
-    return wrap(tag);
-  };
-  redefine($Symbol[PROTOTYPE], 'toString', function toString() {
-    return this._k;
-  });
-
-  $GOPD.f = $getOwnPropertyDescriptor;
-  $DP.f = $defineProperty;
-  __webpack_require__("6abf").f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__("355d").f = $propertyIsEnumerable;
-  __webpack_require__("9aa9").f = $getOwnPropertySymbols;
-
-  if (DESCRIPTORS && !__webpack_require__("b8e3")) {
-    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
-  }
-
-  wksExt.f = function (name) {
-    return wrap(wks(name));
-  };
-}
-
-$export($export.G + $export.W + $export.F * !USE_NATIVE, { Symbol: $Symbol });
-
-for (var es6Symbols = (
-  // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
-  'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'
-).split(','), j = 0; es6Symbols.length > j;)wks(es6Symbols[j++]);
-
-for (var wellKnownSymbols = $keys(wks.store), k = 0; wellKnownSymbols.length > k;) wksDefine(wellKnownSymbols[k++]);
-
-$export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
-  // 19.4.2.1 Symbol.for(key)
-  'for': function (key) {
-    return has(SymbolRegistry, key += '')
-      ? SymbolRegistry[key]
-      : SymbolRegistry[key] = $Symbol(key);
-  },
-  // 19.4.2.5 Symbol.keyFor(sym)
-  keyFor: function keyFor(sym) {
-    if (!isSymbol(sym)) throw TypeError(sym + ' is not a symbol!');
-    for (var key in SymbolRegistry) if (SymbolRegistry[key] === sym) return key;
-  },
-  useSetter: function () { setter = true; },
-  useSimple: function () { setter = false; }
-});
-
-$export($export.S + $export.F * !USE_NATIVE, 'Object', {
-  // 19.1.2.2 Object.create(O [, Properties])
-  create: $create,
-  // 19.1.2.4 Object.defineProperty(O, P, Attributes)
-  defineProperty: $defineProperty,
-  // 19.1.2.3 Object.defineProperties(O, Properties)
-  defineProperties: $defineProperties,
-  // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-  getOwnPropertyDescriptor: $getOwnPropertyDescriptor,
-  // 19.1.2.7 Object.getOwnPropertyNames(O)
-  getOwnPropertyNames: $getOwnPropertyNames,
-  // 19.1.2.8 Object.getOwnPropertySymbols(O)
-  getOwnPropertySymbols: $getOwnPropertySymbols
-});
-
-// 24.3.2 JSON.stringify(value [, replacer [, space]])
-$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
-  var S = $Symbol();
-  // MS Edge converts symbol values to JSON as {}
-  // WebKit converts symbol values to JSON as null
-  // V8 throws on boxed symbols
-  return _stringify([S]) != '[null]' || _stringify({ a: S }) != '{}' || _stringify(Object(S)) != '{}';
-})), 'JSON', {
-  stringify: function stringify(it) {
-    var args = [it];
-    var i = 1;
-    var replacer, $replacer;
-    while (arguments.length > i) args.push(arguments[i++]);
-    $replacer = replacer = args[1];
-    if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
-    if (!isArray(replacer)) replacer = function (key, value) {
-      if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
-      if (!isSymbol(value)) return value;
-    };
-    args[1] = replacer;
-    return _stringify.apply($JSON, args);
-  }
-});
-
-// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__("35e8")($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
-// 19.4.3.5 Symbol.prototype[@@toStringTag]
-setToStringTag($Symbol, 'Symbol');
-// 20.2.1.9 Math[@@toStringTag]
-setToStringTag(Math, 'Math', true);
-// 24.3.3 JSON[@@toStringTag]
-setToStringTag(global.JSON, 'JSON', true);
-
-
-/***/ }),
-
 /***/ "01f9":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -446,32 +204,6 @@ module.exports = function (S, index, unicode) {
 
 /***/ }),
 
-/***/ "0395":
-/***/ (function(module, exports, __webpack_require__) {
-
-// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-var toIObject = __webpack_require__("36c3");
-var gOPN = __webpack_require__("6abf").f;
-var toString = {}.toString;
-
-var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
-  ? Object.getOwnPropertyNames(window) : [];
-
-var getWindowNames = function (it) {
-  try {
-    return gOPN(it);
-  } catch (e) {
-    return windowNames.slice();
-  }
-};
-
-module.exports.f = function getOwnPropertyNames(it) {
-  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
-};
-
-
-/***/ }),
-
 /***/ "07e3":
 /***/ (function(module, exports) {
 
@@ -527,6 +259,29 @@ var min = Math.min;
 module.exports = function (index, length) {
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+
+/***/ "11e9":
+/***/ (function(module, exports, __webpack_require__) {
+
+var pIE = __webpack_require__("52a7");
+var createDesc = __webpack_require__("4630");
+var toIObject = __webpack_require__("6821");
+var toPrimitive = __webpack_require__("6a99");
+var has = __webpack_require__("69a8");
+var IE8_DOM_DEFINE = __webpack_require__("c69a");
+var gOPD = Object.getOwnPropertyDescriptor;
+
+exports.f = __webpack_require__("9e1e") ? gOPD : function getOwnPropertyDescriptor(O, P) {
+  O = toIObject(O);
+  P = toPrimitive(P, true);
+  if (IE8_DOM_DEFINE) try {
+    return gOPD(O, P);
+  } catch (e) { /* empty */ }
+  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
 };
 
 
@@ -614,6 +369,19 @@ module.exports = function (it, S) {
   if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
   throw TypeError("Can't convert object to primitive value");
 };
+
+
+/***/ }),
+
+/***/ "1d3a":
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;function _extends(){return(_extends=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var o in n)Object.prototype.hasOwnProperty.call(n,o)&&(t[o]=n[o])}return t}).apply(this,arguments)}function _typeof(t){return(_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}!function(t,e){"object"===( false?undefined:_typeof(exports))&&"undefined"!=typeof module?module.exports=e(): true?!(__WEBPACK_AMD_DEFINE_FACTORY__ = (e),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):undefined}(this,function(){"use strict";var t="undefined"!=typeof window,e=t&&!("onscroll"in window)||"undefined"!=typeof navigator&&/(gle|ing|ro)bot|crawl|spider/i.test(navigator.userAgent),n=t&&"IntersectionObserver"in window,o=t&&"classList"in document.createElement("p"),r={elements_selector:"img",container:e||t?document:null,threshold:300,thresholds:null,data_src:"src",data_srcset:"srcset",data_sizes:"sizes",data_bg:"bg",class_loading:"loading",class_loaded:"loaded",class_error:"error",load_delay:0,auto_unobserve:!0,callback_enter:null,callback_exit:null,callback_reveal:null,callback_loaded:null,callback_error:null,callback_finish:null,use_native:!1},a=function(t,e){var n,o=new t(e);try{n=new CustomEvent("LazyLoad::Initialized",{detail:{instance:o}})}catch(t){(n=document.createEvent("CustomEvent")).initCustomEvent("LazyLoad::Initialized",!1,!1,{instance:o})}window.dispatchEvent(n)};var i=function(t,e){return t.getAttribute("data-"+e)},s=function(t,e,n){var o="data-"+e;null!==n?t.setAttribute(o,n):t.removeAttribute(o)},c=function(t){return"true"===i(t,"was-processed")},l=function(t,e){return s(t,"ll-timeout",e)},u=function(t){return i(t,"ll-timeout")},d=function(t,e){t&&t(e)},f=function(t,e){t._loadingCount+=e,0===t._elements.length&&0===t._loadingCount&&d(t._settings.callback_finish)},_=function(t){for(var e,n=[],o=0;e=t.children[o];o+=1)"SOURCE"===e.tagName&&n.push(e);return n},v=function(t,e,n){n&&t.setAttribute(e,n)},g=function(t,e){v(t,"sizes",i(t,e.data_sizes)),v(t,"srcset",i(t,e.data_srcset)),v(t,"src",i(t,e.data_src))},m={IMG:function(t,e){var n=t.parentNode;n&&"PICTURE"===n.tagName&&_(n).forEach(function(t){g(t,e)});g(t,e)},IFRAME:function(t,e){v(t,"src",i(t,e.data_src))},VIDEO:function(t,e){_(t).forEach(function(t){v(t,"src",i(t,e.data_src))}),v(t,"src",i(t,e.data_src)),t.load()}},b=function(t,e){var n,o,r=e._settings,a=t.tagName,s=m[a];if(s)return s(t,r),f(e,1),void(e._elements=(n=e._elements,o=t,n.filter(function(t){return t!==o})));!function(t,e){var n=i(t,e.data_src),o=i(t,e.data_bg);n&&(t.style.backgroundImage='url("'.concat(n,'")')),o&&(t.style.backgroundImage=o)}(t,r)},h=function(t,e){o?t.classList.add(e):t.className+=(t.className?" ":"")+e},p=function(t,e,n){t.addEventListener(e,n)},y=function(t,e,n){t.removeEventListener(e,n)},E=function(t,e,n){y(t,"load",e),y(t,"loadeddata",e),y(t,"error",n)},w=function(t,e,n){var r=n._settings,a=e?r.class_loaded:r.class_error,i=e?r.callback_loaded:r.callback_error,s=t.target;!function(t,e){o?t.classList.remove(e):t.className=t.className.replace(new RegExp("(^|\\s+)"+e+"(\\s+|$)")," ").replace(/^\s+/,"").replace(/\s+$/,"")}(s,r.class_loading),h(s,a),d(i,s),f(n,-1)},I=function(t,e){var n=function n(r){w(r,!0,e),E(t,n,o)},o=function o(r){w(r,!1,e),E(t,n,o)};!function(t,e,n){p(t,"load",e),p(t,"loadeddata",e),p(t,"error",n)}(t,n,o)},k=["IMG","IFRAME","VIDEO"],A=function(t,e){var n=e._observer;z(t,e),n&&e._settings.auto_unobserve&&n.unobserve(t)},L=function(t){var e=u(t);e&&(clearTimeout(e),l(t,null))},x=function(t,e){var n=e._settings.load_delay,o=u(t);o||(o=setTimeout(function(){A(t,e),L(t)},n),l(t,o))},z=function(t,e,n){var o=e._settings;!n&&c(t)||(k.indexOf(t.tagName)>-1&&(I(t,e),h(t,o.class_loading)),b(t,e),function(t){s(t,"was-processed","true")}(t),d(o.callback_reveal,t),d(o.callback_set,t))},O=function(t){return!!n&&(t._observer=new IntersectionObserver(function(e){e.forEach(function(e){return function(t){return t.isIntersecting||t.intersectionRatio>0}(e)?function(t,e){var n=e._settings;d(n.callback_enter,t),n.load_delay?x(t,e):A(t,e)}(e.target,t):function(t,e){var n=e._settings;d(n.callback_exit,t),n.load_delay&&L(t)}(e.target,t)})},{root:(e=t._settings).container===document?null:e.container,rootMargin:e.thresholds||e.threshold+"px"}),!0);var e},N=["IMG","IFRAME"],C=function(t,e){return function(t){return t.filter(function(t){return!c(t)})}((n=t||function(t){return t.container.querySelectorAll(t.elements_selector)}(e),Array.prototype.slice.call(n)));var n},M=function(t,e){this._settings=function(t){return _extends({},r,t)}(t),this._loadingCount=0,O(this),this.update(e)};return M.prototype={update:function(t){var n,o=this,r=this._settings;(this._elements=C(t,r),!e&&this._observer)?(function(t){return t.use_native&&"loading"in HTMLImageElement.prototype}(r)&&((n=this)._elements.forEach(function(t){-1!==N.indexOf(t.tagName)&&(t.setAttribute("loading","lazy"),z(t,n))}),this._elements=C(t,r)),this._elements.forEach(function(t){o._observer.observe(t)})):this.loadAll()},destroy:function(){var t=this;this._observer&&(this._elements.forEach(function(e){t._observer.unobserve(e)}),this._observer=null),this._elements=null,this._settings=null},load:function(t,e){z(t,this,e)},loadAll:function(){var t=this;this._elements.forEach(function(e){A(e,t)})}},t&&function(t,e){if(e)if(e.length)for(var n,o=0;n=e[o];o+=1)a(t,n);else a(t,e)}(M,window.lazyLoadOptions),M});
+//# sourceMappingURL=lazyload.min.js.map
 
 
 /***/ }),
@@ -804,10 +572,11 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ "268f":
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "2621":
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__("fde4");
+exports.f = Object.getOwnPropertySymbols;
+
 
 /***/ }),
 
@@ -1026,22 +795,6 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 /***/ }),
 
-/***/ "32a6":
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__("241e");
-var $keys = __webpack_require__("c3a1");
-
-__webpack_require__("ce7e")('keys', function () {
-  return function keys(it) {
-    return $keys(toObject(it));
-  };
-});
-
-
-/***/ }),
-
 /***/ "32e9":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1075,14 +828,6 @@ var cof = __webpack_require__("6b4c");
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
-
-
-/***/ }),
-
-/***/ "355d":
-/***/ (function(module, exports) {
-
-exports.f = {}.propertyIsEnumerable;
 
 
 /***/ }),
@@ -1211,6 +956,22 @@ module.exports = function defineProperty(it, key, desc) {
 
 /***/ }),
 
+/***/ "456d":
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 Object.keys(O)
+var toObject = __webpack_require__("4bf8");
+var $keys = __webpack_require__("0d58");
+
+__webpack_require__("5eda")('keys', function () {
+  return function keys(it) {
+    return $keys(toObject(it));
+  };
+});
+
+
+/***/ }),
+
 /***/ "4588":
 /***/ (function(module, exports) {
 
@@ -1273,28 +1034,6 @@ $export($export.S + $export.F * !__webpack_require__("8e60"), 'Object', { define
 
 /***/ }),
 
-/***/ "47ee":
-/***/ (function(module, exports, __webpack_require__) {
-
-// all enumerable object keys, includes symbols
-var getKeys = __webpack_require__("c3a1");
-var gOPS = __webpack_require__("9aa9");
-var pIE = __webpack_require__("355d");
-module.exports = function (it) {
-  var result = getKeys(it);
-  var getSymbols = gOPS.f;
-  if (getSymbols) {
-    var symbols = getSymbols(it);
-    var isEnum = pIE.f;
-    var i = 0;
-    var key;
-    while (symbols.length > i) if (isEnum.call(it, key = symbols[i++])) result.push(key);
-  } return result;
-};
-
-
-/***/ }),
-
 /***/ "481b":
 /***/ (function(module, exports) {
 
@@ -1318,6 +1057,7 @@ module.exports = function (it) {
 /***/ "504c":
 /***/ (function(module, exports, __webpack_require__) {
 
+var DESCRIPTORS = __webpack_require__("9e1e");
 var getKeys = __webpack_require__("0d58");
 var toIObject = __webpack_require__("6821");
 var isEnum = __webpack_require__("52a7").f;
@@ -1329,9 +1069,13 @@ module.exports = function (isEntries) {
     var i = 0;
     var result = [];
     var key;
-    while (length > i) if (isEnum.call(O, key = keys[i++])) {
-      result.push(isEntries ? [key, O[key]] : O[key]);
-    } return result;
+    while (length > i) {
+      key = keys[i++];
+      if (!DESCRIPTORS || isEnum.call(O, key)) {
+        result.push(isEntries ? [key, O[key]] : O[key]);
+      }
+    }
+    return result;
   };
 };
 
@@ -1494,7 +1238,7 @@ module.exports = function (key) {
 /***/ "584a":
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.5' };
+var core = module.exports = { version: '2.6.9' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -1584,6 +1328,23 @@ module.exports = $export;
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__("469f");
+
+/***/ }),
+
+/***/ "5eda":
+/***/ (function(module, exports, __webpack_require__) {
+
+// most Object methods by ES6 should accept primitives
+var $export = __webpack_require__("5ca1");
+var core = __webpack_require__("8378");
+var fails = __webpack_require__("79e5");
+module.exports = function (KEY, exec) {
+  var fn = (core.Object || {})[KEY] || Object[KEY];
+  var exp = {};
+  exp[KEY] = exec(fn);
+  $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
+};
+
 
 /***/ }),
 
@@ -1722,22 +1483,6 @@ module.exports = $export;
 
 /***/ }),
 
-/***/ "6718":
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__("e53d");
-var core = __webpack_require__("584a");
-var LIBRARY = __webpack_require__("b8e3");
-var wksExt = __webpack_require__("ccb9");
-var defineProperty = __webpack_require__("d9f6").f;
-module.exports = function (name) {
-  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
-  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
-};
-
-
-/***/ }),
-
 /***/ "6821":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1776,20 +1521,6 @@ module.exports = function (it, S) {
   if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
   if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
   throw TypeError("Can't convert object to primitive value");
-};
-
-
-/***/ }),
-
-/***/ "6abf":
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys = __webpack_require__("e6f3");
-var hiddenKeys = __webpack_require__("1691").concat('length', 'prototype');
-
-exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return $keys(O, hiddenKeys);
 };
 
 
@@ -1985,7 +1716,7 @@ module.exports = function (it, tag, stat) {
 /***/ "8378":
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.5' };
+var core = module.exports = { version: '2.6.9' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -2037,21 +1768,41 @@ exports.f = __webpack_require__("9e1e") ? Object.defineProperty : function defin
 
 /***/ }),
 
-/***/ "8aae":
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__("32a6");
-module.exports = __webpack_require__("584a").Object.keys;
-
-
-/***/ }),
-
 /***/ "8e60":
 /***/ (function(module, exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
 module.exports = !__webpack_require__("294c")(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+
+/***/ "8e6e":
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/tc39/proposal-object-getownpropertydescriptors
+var $export = __webpack_require__("5ca1");
+var ownKeys = __webpack_require__("990b");
+var toIObject = __webpack_require__("6821");
+var gOPD = __webpack_require__("11e9");
+var createProperty = __webpack_require__("f1ae");
+
+$export($export.S, 'Object', {
+  getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object) {
+    var O = toIObject(object);
+    var getDesc = gOPD.f;
+    var keys = ownKeys(O);
+    var result = {};
+    var i = 0;
+    var key, desc;
+    while (keys.length > i) {
+      desc = getDesc(O, key = keys[i++]);
+      if (desc !== undefined) createProperty(result, key, desc);
+    }
+    return result;
+  }
 });
 
 
@@ -2090,6 +1841,20 @@ module.exports = Array.isArray || function isArray(arg) {
 
 /***/ }),
 
+/***/ "9093":
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+var $keys = __webpack_require__("ce10");
+var hiddenKeys = __webpack_require__("e11e").concat('length', 'prototype');
+
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+  return $keys(O, hiddenKeys);
+};
+
+
+/***/ }),
+
 /***/ "9138":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2098,10 +1863,19 @@ module.exports = __webpack_require__("35e8");
 
 /***/ }),
 
-/***/ "9aa9":
-/***/ (function(module, exports) {
+/***/ "990b":
+/***/ (function(module, exports, __webpack_require__) {
 
-exports.f = Object.getOwnPropertySymbols;
+// all object keys, includes non-enumerable and symbols
+var gOPN = __webpack_require__("9093");
+var gOPS = __webpack_require__("2621");
+var anObject = __webpack_require__("cb7c");
+var Reflect = __webpack_require__("7726").Reflect;
+module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
+  var keys = gOPN.f(anObject(it));
+  var getSymbols = gOPS.f;
+  return getSymbols ? keys.concat(getSymbols(it)) : keys;
+};
 
 
 /***/ }),
@@ -2345,13 +2119,6 @@ __webpack_require__("214f")('replace', 2, function (defined, REPLACE, $replace, 
 
 /***/ }),
 
-/***/ "a4bb":
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__("8aae");
-
-/***/ }),
-
 /***/ "a745":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2485,45 +2252,6 @@ module.exports = function (it) {
   if (it == undefined) throw TypeError("Can't call method on  " + it);
   return it;
 };
-
-
-/***/ }),
-
-/***/ "bf0b":
-/***/ (function(module, exports, __webpack_require__) {
-
-var pIE = __webpack_require__("355d");
-var createDesc = __webpack_require__("aebd");
-var toIObject = __webpack_require__("36c3");
-var toPrimitive = __webpack_require__("1bc3");
-var has = __webpack_require__("07e3");
-var IE8_DOM_DEFINE = __webpack_require__("794b");
-var gOPD = Object.getOwnPropertyDescriptor;
-
-exports.f = __webpack_require__("8e60") ? gOPD : function getOwnPropertyDescriptor(O, P) {
-  O = toIObject(O);
-  P = toPrimitive(P, true);
-  if (IE8_DOM_DEFINE) try {
-    return gOPD(O, P);
-  } catch (e) { /* empty */ }
-  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
-};
-
-
-/***/ }),
-
-/***/ "bf90":
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-var toIObject = __webpack_require__("36c3");
-var $getOwnPropertyDescriptor = __webpack_require__("bf0b").f;
-
-__webpack_require__("ce7e")('getOwnPropertyDescriptor', function () {
-  return function getOwnPropertyDescriptor(it, key) {
-    return $getOwnPropertyDescriptor(toIObject(it), key);
-  };
-});
 
 
 /***/ }),
@@ -2690,14 +2418,6 @@ module.exports = function (it) {
 
 /***/ }),
 
-/***/ "ccb9":
-/***/ (function(module, exports, __webpack_require__) {
-
-exports.f = __webpack_require__("5168");
-
-
-/***/ }),
-
 /***/ "ce10":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2717,23 +2437,6 @@ module.exports = function (object, names) {
     ~arrayIndexOf(result, key) || result.push(key);
   }
   return result;
-};
-
-
-/***/ }),
-
-/***/ "ce7e":
-/***/ (function(module, exports, __webpack_require__) {
-
-// most Object methods by ES6 should accept primitives
-var $export = __webpack_require__("63b6");
-var core = __webpack_require__("584a");
-var fails = __webpack_require__("294c");
-module.exports = function (KEY, exec) {
-  var fn = (core.Object || {})[KEY] || Object[KEY];
-  var exp = {};
-  exp[KEY] = exec(fn);
-  $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
 };
 
 
@@ -2850,13 +2553,6 @@ module.exports = (
 
 /***/ }),
 
-/***/ "e265":
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__("ed33");
-
-/***/ }),
-
 /***/ "e4ae":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2906,71 +2602,18 @@ module.exports = function (object, names) {
 
 /***/ }),
 
-/***/ "ebfd":
+/***/ "f1ae":
 /***/ (function(module, exports, __webpack_require__) {
 
-var META = __webpack_require__("62a0")('meta');
-var isObject = __webpack_require__("f772");
-var has = __webpack_require__("07e3");
-var setDesc = __webpack_require__("d9f6").f;
-var id = 0;
-var isExtensible = Object.isExtensible || function () {
-  return true;
-};
-var FREEZE = !__webpack_require__("294c")(function () {
-  return isExtensible(Object.preventExtensions({}));
-});
-var setMeta = function (it) {
-  setDesc(it, META, { value: {
-    i: 'O' + ++id, // object ID
-    w: {}          // weak collections IDs
-  } });
-};
-var fastKey = function (it, create) {
-  // return primitive with prefix
-  if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-  if (!has(it, META)) {
-    // can't set metadata to uncaught frozen object
-    if (!isExtensible(it)) return 'F';
-    // not necessary to add metadata
-    if (!create) return 'E';
-    // add missing metadata
-    setMeta(it);
-  // return object ID
-  } return it[META].i;
-};
-var getWeak = function (it, create) {
-  if (!has(it, META)) {
-    // can't set metadata to uncaught frozen object
-    if (!isExtensible(it)) return true;
-    // not necessary to add metadata
-    if (!create) return false;
-    // add missing metadata
-    setMeta(it);
-  // return hash weak collections IDs
-  } return it[META].w;
-};
-// add metadata on freeze-family methods calling
-var onFreeze = function (it) {
-  if (FREEZE && meta.NEED && isExtensible(it) && !has(it, META)) setMeta(it);
-  return it;
-};
-var meta = module.exports = {
-  KEY: META,
-  NEED: false,
-  fastKey: fastKey,
-  getWeak: getWeak,
-  onFreeze: onFreeze
-};
+"use strict";
 
+var $defineProperty = __webpack_require__("86cc");
+var createDesc = __webpack_require__("4630");
 
-/***/ }),
-
-/***/ "ed33":
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__("014b");
-module.exports = __webpack_require__("584a").Object.getOwnPropertySymbols;
+module.exports = function (object, index, value) {
+  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
+  else object[index] = value;
+};
 
 
 /***/ }),
@@ -3077,26 +2720,12 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js
-var define_property = __webpack_require__("85f2");
-var define_property_default = /*#__PURE__*/__webpack_require__.n(define_property);
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es7.object.get-own-property-descriptors.js
+var es7_object_get_own_property_descriptors = __webpack_require__("8e6e");
 
-// CONCATENATED MODULE: ./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es6.object.keys.js
+var es6_object_keys = __webpack_require__("456d");
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    define_property_default()(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
 // EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/array/is-array.js
 var is_array = __webpack_require__("a745");
 var is_array_default = /*#__PURE__*/__webpack_require__.n(is_array);
@@ -3157,41 +2786,25 @@ var es6_array_iterator = __webpack_require__("cadf");
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es7.object.entries.js
 var es7_object_entries = __webpack_require__("ffc1");
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-descriptor.js
-var get_own_property_descriptor = __webpack_require__("268f");
-var get_own_property_descriptor_default = /*#__PURE__*/__webpack_require__.n(get_own_property_descriptor);
+// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js
+var define_property = __webpack_require__("85f2");
+var define_property_default = /*#__PURE__*/__webpack_require__.n(define_property);
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/object/get-own-property-symbols.js
-var get_own_property_symbols = __webpack_require__("e265");
-var get_own_property_symbols_default = /*#__PURE__*/__webpack_require__.n(get_own_property_symbols);
+// CONCATENATED MODULE: ./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/object/keys.js
-var keys = __webpack_require__("a4bb");
-var keys_default = /*#__PURE__*/__webpack_require__.n(keys);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js
-
-
-
-
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-
-    var ownKeys = keys_default()(source);
-
-    if (typeof get_own_property_symbols_default.a === 'function') {
-      ownKeys = ownKeys.concat(get_own_property_symbols_default()(source).filter(function (sym) {
-        return get_own_property_descriptor_default()(source, sym).enumerable;
-      }));
-    }
-
-    ownKeys.forEach(function (key) {
-      _defineProperty(target, key, source[key]);
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    define_property_default()(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
     });
+  } else {
+    obj[key] = value;
   }
 
-  return target;
+  return obj;
 }
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.regexp.replace.js
 var es6_regexp_replace = __webpack_require__("a481");
@@ -3255,534 +2868,16 @@ var lazySrc = function lazySrc(instances) {
 };
 
 /* harmony default export */ var directives_lazySrc = (lazySrc);
-// CONCATENATED MODULE: ./node_modules/vanilla-lazyload/dist/lazyload.es2015.js
-var getDefaultSettings = () => ({
-	elements_selector: "img",
-	container: window,
-	threshold: 300,
-	throttle: 150,
-	data_src: "src",
-	data_srcset: "srcset",
-	data_sizes: "sizes",
-	data_bg: "bg",
-	class_loading: "loading",
-	class_loaded: "loaded",
-	class_error: "error",
-	class_initial: "initial",
-	skip_invisible: true,
-	callback_load: null,
-	callback_error: null,
-	callback_set: null,
-	callback_enter: null,
-	callback_finish: null,
-	to_webp: false
-});
-
-const dataPrefix = "data-";
-const processedDataName = "was-processed";
-const processedDataValue = "true";
-
-const getData = (element, attribute) => {
-	return element.getAttribute(dataPrefix + attribute);
-};
-
-const setData = (element, attribute, value) => {
-	var attrName = dataPrefix + attribute;
-	if (value === null) {
-		element.removeAttribute(attrName);
-		return;
-	}
-	element.setAttribute(attrName, value);
-};
-
-const setWasProcessedData = element =>
-	setData(element, processedDataName, processedDataValue);
-
-const getWasProcessedData = element =>
-	getData(element, processedDataName) === processedDataValue;
-
-const purgeProcessedElements = elements => {
-	return elements.filter(element => !getWasProcessedData(element));
-};
-
-const purgeOneElement = (elements, elementToPurge) => {
-	return elements.filter(element => element !== elementToPurge);
-};
-
-const getTopOffset = function(element) {
-	return (
-		element.getBoundingClientRect().top +
-		window.pageYOffset -
-		element.ownerDocument.documentElement.clientTop
-	);
-};
-
-const isBelowViewport = function(element, container, threshold) {
-	const fold =
-		container === window
-			? window.innerHeight + window.pageYOffset
-			: getTopOffset(container) + container.offsetHeight;
-	return fold <= getTopOffset(element) - threshold;
-};
-
-const getLeftOffset = function(element) {
-	return (
-		element.getBoundingClientRect().left +
-		window.pageXOffset -
-		element.ownerDocument.documentElement.clientLeft
-	);
-};
-
-const isAtRightOfViewport = function(element, container, threshold) {
-	const documentWidth = window.innerWidth;
-	const fold =
-		container === window
-			? documentWidth + window.pageXOffset
-			: getLeftOffset(container) + documentWidth;
-	return fold <= getLeftOffset(element) - threshold;
-};
-
-const isAboveViewport = function(element, container, threshold) {
-	const fold =
-		container === window ? window.pageYOffset : getTopOffset(container);
-	return fold >= getTopOffset(element) + threshold + element.offsetHeight;
-};
-
-const isAtLeftOfViewport = function(element, container, threshold) {
-	const fold =
-		container === window ? window.pageXOffset : getLeftOffset(container);
-	return fold >= getLeftOffset(element) + threshold + element.offsetWidth;
-};
-
-function isInsideViewport(element, container, threshold) {
-	return (
-		!isBelowViewport(element, container, threshold) &&
-		!isAboveViewport(element, container, threshold) &&
-		!isAtRightOfViewport(element, container, threshold) &&
-		!isAtLeftOfViewport(element, container, threshold)
-	);
-}
-
-/* Creates instance and notifies it through the window element */
-const lazyload_es2015_createInstance = function(classObj, options) {
-	var event;
-	let eventString = "LazyLoad::Initialized";
-	let instance = new classObj(options);
-	try {
-		// Works in modern browsers
-		event = new CustomEvent(eventString, { detail: { instance } });
-	} catch (err) {
-		// Works in Internet Explorer (all versions)
-		event = document.createEvent("CustomEvent");
-		event.initCustomEvent(eventString, false, false, { instance });
-	}
-	window.dispatchEvent(event);
-};
-
-/* Auto initialization of one or more instances of lazyload, depending on the 
-    options passed in (plain object or an array) */
-function autoInitialize(classObj, options) {
-	if (!options) {
-		return;
-	}
-	if (!options.length) {
-		// Plain object
-		lazyload_es2015_createInstance(classObj, options);
-	} else {
-		// Array of objects
-		for (let i = 0, optionsItem; (optionsItem = options[i]); i += 1) {
-			lazyload_es2015_createInstance(classObj, optionsItem);
-		}
-	}
-}
-
-const replaceExtToWebp = (value, condition) =>
-	condition ? value.replace(/\.(jpe?g|png)/gi, ".webp") : value;
-
-const detectWebp = () => {
-	var webpString = "image/webp";
-	var canvas = document.createElement("canvas");
-
-	if (canvas.getContext && canvas.getContext("2d")) {
-		return canvas.toDataURL(webpString).indexOf(`data:${webpString}`) === 0;
-	}
-
-	return false;
-};
-
-const runningOnBrowser = typeof window !== "undefined";
-
-const isBot =
-	(runningOnBrowser && !("onscroll" in window)) ||
-	/(gle|ing|ro)bot|crawl|spider/i.test(navigator.userAgent);
-const supportsClassList =
-	runningOnBrowser && "classList" in document.createElement("p");
-
-const supportsWebp = runningOnBrowser && detectWebp();
-
-const addClass = (element, className) => {
-	if (supportsClassList) {
-		element.classList.add(className);
-		return;
-	}
-	element.className += (element.className ? " " : "") + className;
-};
-
-const removeClass = (element, className) => {
-	if (supportsClassList) {
-		element.classList.remove(className);
-		return;
-	}
-	element.className = element.className.
-		replace(new RegExp("(^|\\s+)" + className + "(\\s+|$)"), " ").
-		replace(/^\s+/, "").
-		replace(/\s+$/, "");
-};
-
-const setSourcesInChildren = function(
-	parentTag,
-	attrName,
-	dataAttrName,
-	toWebpFlag
-) {
-	for (let i = 0, childTag; (childTag = parentTag.children[i]); i += 1) {
-		if (childTag.tagName === "SOURCE") {
-			let attrValue = getData(childTag, dataAttrName);
-			setAttributeIfValue(childTag, attrName, attrValue, toWebpFlag);
-		}
-	}
-};
-
-const setAttributeIfValue = function(
-	element,
-	attrName,
-	value,
-	toWebpFlag
-) {
-	if (!value) {
-		return;
-	}
-	element.setAttribute(attrName, replaceExtToWebp(value, toWebpFlag));
-};
-
-const setSourcesImg = (element, settings) => {
-	const toWebpFlag = supportsWebp && settings.to_webp;
-	const srcsetDataName = settings.data_srcset;
-	const parent = element.parentNode;
-
-	if (parent && parent.tagName === "PICTURE") {
-		setSourcesInChildren(parent, "srcset", srcsetDataName, toWebpFlag);
-	}
-	const sizesDataValue = getData(element, settings.data_sizes);
-	setAttributeIfValue(element, "sizes", sizesDataValue);
-	const srcsetDataValue = getData(element, srcsetDataName);
-	setAttributeIfValue(element, "srcset", srcsetDataValue, toWebpFlag);
-	const srcDataValue = getData(element, settings.data_src);
-	setAttributeIfValue(element, "src", srcDataValue, toWebpFlag);
-};
-
-const setSourcesIframe = (element, settings) => {
-	const srcDataValue = getData(element, settings.data_src);
-
-	setAttributeIfValue(element, "src", srcDataValue);
-};
-
-const setSourcesVideo = (element, settings) => {
-	const srcDataName = settings.data_src;
-	const srcDataValue = getData(element, srcDataName);
-
-	setSourcesInChildren(element, "src", srcDataName);
-	setAttributeIfValue(element, "src", srcDataValue);
-	element.load();
-};
-
-const setSourcesBgImage = (element, settings) => {
-	const toWebpFlag = supportsWebp && settings.to_webp;
-	const srcDataValue = getData(element, settings.data_src);
-	const bgDataValue = getData(element, settings.data_bg);
-
-	if (srcDataValue) {
-		let setValue = replaceExtToWebp(srcDataValue, toWebpFlag);
-		element.style.backgroundImage = `url("${setValue}")`;
-	}
-
-	if (bgDataValue) {
-		let setValue = replaceExtToWebp(bgDataValue, toWebpFlag);
-		element.style.backgroundImage = setValue;
-	}
-};
-
-const setSourcesFunctions = {
-	IMG: setSourcesImg,
-	IFRAME: setSourcesIframe,
-	VIDEO: setSourcesVideo
-};
-
-const setSources = (element, instance) => {
-	const settings = instance._settings;
-	const tagName = element.tagName;
-	const setSourcesFunction = setSourcesFunctions[tagName];
-	if (setSourcesFunction) {
-		setSourcesFunction(element, settings);
-		instance._updateLoadingCount(1);
-		instance._elements = purgeOneElement(instance._elements, element);
-		return;
-	}
-	setSourcesBgImage(element, settings);
-};
-
-const callbackIfSet = function(callback, argument) {
-	if (callback) {
-		callback(argument);
-	}
-};
-
-const genericLoadEventName = "load";
-const mediaLoadEventName = "loadeddata";
-const errorEventName = "error";
-
-const addEventListener = (element, eventName, handler) => {
-	element.addEventListener(eventName, handler);
-};
-
-const removeEventListener = (element, eventName, handler) => {
-	element.removeEventListener(eventName, handler);
-};
-
-const addAllEventListeners = (element, loadHandler, errorHandler) => {
-	addEventListener(element, genericLoadEventName, loadHandler);
-	addEventListener(element, mediaLoadEventName, loadHandler);
-	addEventListener(element, errorEventName, errorHandler);
-};
-
-const removeAllEventListeners = (element, loadHandler, errorHandler) => {
-	removeEventListener(element, genericLoadEventName, loadHandler);
-	removeEventListener(element, mediaLoadEventName, loadHandler);
-	removeEventListener(element, errorEventName, errorHandler);
-};
-
-const eventHandler = function(event, success, instance) {
-	var settings = instance._settings;
-	const className = success ? settings.class_loaded : settings.class_error;
-	const callback = success ? settings.callback_load : settings.callback_error;
-	const element = event.target;
-
-	removeClass(element, settings.class_loading);
-	addClass(element, className);
-	callbackIfSet(callback, element);
-
-	instance._updateLoadingCount(-1);
-};
-
-const addOneShotEventListeners = (element, instance) => {
-	const loadHandler = event => {
-		eventHandler(event, true, instance);
-		removeAllEventListeners(element, loadHandler, errorHandler);
-	};
-	const errorHandler = event => {
-		eventHandler(event, false, instance);
-		removeAllEventListeners(element, loadHandler, errorHandler);
-	};
-	addAllEventListeners(element, loadHandler, errorHandler);
-};
-
-const managedTags = ["IMG", "IFRAME", "VIDEO"];
-
-function revealElement(element, instance, force) {
-	var settings = instance._settings;
-	if (!force && getWasProcessedData(element)) {
-		return; // element has already been processed and force wasn't true
-	}
-	callbackIfSet(settings.callback_enter, element);
-	if (managedTags.indexOf(element.tagName) > -1) {
-		addOneShotEventListeners(element, instance);
-		addClass(element, settings.class_loading);
-	}
-	setSources(element, instance);
-	setWasProcessedData(element);
-	callbackIfSet(settings.callback_set, element);
-}
-
-const removeFromArray = (elements, indexes) => {
-	while (indexes.length) {
-		elements.splice(indexes.pop(), 1);
-	}
-};
-
-/*
- * Constructor
- */
-
-const LazyLoad = function(instanceSettings) {
-	this._settings = Object.assign({}, getDefaultSettings(), instanceSettings);
-	this._loadingCount = 0;
-	this._queryOriginNode =
-		this._settings.container === window
-			? document
-			: this._settings.container;
-
-	this._previousLoopTime = 0;
-	this._loopTimeout = null;
-	this._boundHandleScroll = this.handleScroll.bind(this);
-
-	this._isFirstLoop = true;
-	window.addEventListener("resize", this._boundHandleScroll);
-	this.update();
-};
-
-LazyLoad.prototype = {
-	_loopThroughElements: function(forceDownload) {
-		const settings = this._settings,
-			elements = this._elements,
-			elementsLength = !elements ? 0 : elements.length;
-		let i,
-			processedIndexes = [],
-			isFirstLoop = this._isFirstLoop;
-
-		if (isFirstLoop) {
-			this._isFirstLoop = false;
-		}
-
-		if (elementsLength === 0) {
-			this._stopScrollHandler();
-			return;
-		}
-
-		for (i = 0; i < elementsLength; i++) {
-			let element = elements[i];
-			/* If must skip_invisible and element is invisible, skip it */
-			if (settings.skip_invisible && element.offsetParent === null) {
-				continue;
-			}
-
-			if (
-				forceDownload ||
-				isInsideViewport(
-					element,
-					settings.container,
-					settings.threshold
-				)
-			) {
-				if (isFirstLoop) {
-					addClass(element, settings.class_initial);
-				}
-				this.load(element);
-				processedIndexes.push(i);
-			}
-		}
-
-		// Removing processed elements from this._elements.
-		removeFromArray(elements, processedIndexes);
-	},
-
-	_startScrollHandler: function() {
-		if (!this._isHandlingScroll) {
-			this._isHandlingScroll = true;
-			this._settings.container.addEventListener(
-				"scroll",
-				this._boundHandleScroll
-			);
-		}
-	},
-
-	_stopScrollHandler: function() {
-		if (this._isHandlingScroll) {
-			this._isHandlingScroll = false;
-			this._settings.container.removeEventListener(
-				"scroll",
-				this._boundHandleScroll
-			);
-		}
-	},
-
-	_updateLoadingCount: function(plusMinus) {
-		this._loadingCount += plusMinus;
-		if (this._elements.length === 0 && this._loadingCount === 0) {
-			callbackIfSet(this._settings.callback_finish);
-		}
-	},
-
-	handleScroll: function() {
-		const throttle = this._settings.throttle;
-
-		if (throttle !== 0) {
-			let now = Date.now();
-			let remainingTime = throttle - (now - this._previousLoopTime);
-			if (remainingTime <= 0 || remainingTime > throttle) {
-				if (this._loopTimeout) {
-					clearTimeout(this._loopTimeout);
-					this._loopTimeout = null;
-				}
-				this._previousLoopTime = now;
-				this._loopThroughElements();
-			} else if (!this._loopTimeout) {
-				this._loopTimeout = setTimeout(
-					function() {
-						this._previousLoopTime = Date.now();
-						this._loopTimeout = null;
-						this._loopThroughElements();
-					}.bind(this),
-					remainingTime
-				);
-			}
-		} else {
-			this._loopThroughElements();
-		}
-	},
-
-	loadAll: function() {
-		this._loopThroughElements(true);
-	},
-
-	update: function(elements) {
-		const settings = this._settings;
-		const nodeSet =
-			elements ||
-			this._queryOriginNode.querySelectorAll(settings.elements_selector);
-
-		this._elements = purgeProcessedElements(
-			Array.prototype.slice.call(nodeSet) // NOTE: nodeset to array for IE compatibility
-		);
-
-		if (isBot) {
-			this.loadAll();
-			return;
-		}
-
-		this._loopThroughElements();
-		this._startScrollHandler();
-	},
-
-	destroy: function() {
-		window.removeEventListener("resize", this._boundHandleScroll);
-		if (this._loopTimeout) {
-			clearTimeout(this._loopTimeout);
-			this._loopTimeout = null;
-		}
-		this._stopScrollHandler();
-		this._elements = null;
-		this._queryOriginNode = null;
-		this._settings = null;
-	},
-
-	load: function(element, force) {
-		revealElement(element, this, force);
-	}
-};
-
-/* Automatic instances creation if required (useful for async script loading) */
-if (runningOnBrowser) {
-	autoInitialize(LazyLoad, window.lazyLoadOptions);
-}
-
-/* harmony default export */ var lazyload_es2015 = (LazyLoad);
+// EXTERNAL MODULE: ./node_modules/vanilla-lazyload/dist/lazyload.min.js
+var lazyload_min = __webpack_require__("1d3a");
+var lazyload_min_default = /*#__PURE__*/__webpack_require__.n(lazyload_min);
 
 // CONCATENATED MODULE: ./src/directives/lazyContainer.js
 
 
 var lazyContainer_lazyContainer = function lazyContainer() {
   function bind(el) {
-    new lazyload_es2015({
+    new lazyload_min_default.a({
       container: el
     });
   }
@@ -3802,12 +2897,16 @@ var lazyContainer_lazyContainer = function lazyContainer() {
 
 
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+
+
 
 var lazyLoadPlugin = {};
 
 lazyLoadPlugin.install = function (Vue, options) {
   var createInstance = function createInstance(options) {
-    return new lazyload_es2015(options);
+    return new lazyload_min_default.a(options);
   };
 
   var _ref = options || {},
@@ -3819,10 +2918,10 @@ lazyLoadPlugin.install = function (Vue, options) {
   };
   customInstancesOptions.root = customInstancesOptions.root || {};
   var instancesOptions = {
-    root: _objectSpread({}, defaultRootInstance, customInstancesOptions.root)
+    root: _objectSpread({}, defaultRootInstance, {}, customInstancesOptions.root)
   };
   delete customInstancesOptions.root;
-  instancesOptions = _objectSpread({}, instancesOptions, customInstancesOptions);
+  instancesOptions = _objectSpread({}, instancesOptions, {}, customInstancesOptions);
   var instances = Object.entries(instancesOptions).map(function (item) {
     var _item = _slicedToArray(item, 2),
         key = _item[0],
@@ -3849,18 +2948,6 @@ lazyLoadPlugin.install = function (Vue, options) {
 
 /* harmony default export */ var entry_lib = __webpack_exports__["default"] = (lazyload_vue);
 
-
-
-/***/ }),
-
-/***/ "fde4":
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__("bf90");
-var $Object = __webpack_require__("584a").Object;
-module.exports = function getOwnPropertyDescriptor(it, key) {
-  return $Object.getOwnPropertyDescriptor(it, key);
-};
 
 
 /***/ }),
