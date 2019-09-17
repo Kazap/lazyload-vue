@@ -3,32 +3,15 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+
+defaults: &defaults
+  working_directory: ~/lazyload-vue
+  docker:
+    - image: circleci/node:8.9.1
+
 jobs:
-  deploy:
-    docker:
-      # specify the version you desire here
-      - image:  circleci/node:8.11.2
-    steps:
-      - attach_workspace:
-          at: ~/lazyload-vue
-      - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/lazyload-vue/.npmrc
-      - run:
-          name: Publish package
-          command: npm publish
   build:
-    docker:
-      # specify the version you desire here
-      - image:  circleci/node:8.11.2
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/lazyload-vue
-
+    <<: *defaults
     steps:
       - checkout
 
@@ -48,6 +31,22 @@ jobs:
 
       # run build!
       - run: yarn build
+
+      - persist_to_workspace:
+          root: ~/lazyload-vue
+          paths: .
+
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/lazyload-vue
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/lazyload-vue/.npmrc
+      - run:
+          name: Publish package
+          command: npm publish
 
 workflows:
   version: 2
