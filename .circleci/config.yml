@@ -44,7 +44,7 @@ jobs:
       - deploy:
           name: Publish to npmjs.org
           command: |
-            echo "//registry.npmjs.org/:_authToken=${npm_TOKEN}" >> ~/.npmrc
+            echo "//registry.npmjs.org/:_authToken=${npm_TOKEN}" >> ~/lazyload-vue/.npmrc
             npm publish
 
 workflows:
@@ -54,12 +54,12 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^v.*/
+              only: /^build\(v.*\)/
       - deploy:
           requires:
             - build
           filters:
             tags:
-              only: /^v.*/
+              only: /^build\(v.*\)/
             branches:
               ignore: /.*/
