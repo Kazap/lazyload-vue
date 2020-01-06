@@ -7,7 +7,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/lazyload-vue
   docker:
-    - image: circleci/node:8.9.1
+    - image: circleci/node:10.18.0
 
 jobs:
   build:
