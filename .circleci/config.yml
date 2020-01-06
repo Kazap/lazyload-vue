@@ -44,7 +44,7 @@ jobs:
       - deploy:
           name: Publish to npmjs.org
           command: |
-            echo "//registry.npmjs.org/:_authToken=${npm_TOKEN}" >> ~/lazyload-vue/.npmrc
+            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             npm publish
 
 workflows:
