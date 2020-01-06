@@ -54,12 +54,12 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^build\(v.*\)/
+              only: /^v.*/
       - deploy:
           requires:
             - build
           filters:
             tags:
-              only: /^build\(v.*\)/
+              only: /^v.*/
             branches:
               ignore: /.*/
